@@ -1,31 +1,35 @@
 const CACHE_NAME = 'evenup-v1.0.0';
+const BASE_PATH = '/Newtry'; // Replace with your repo name
+
 const urlsToCache = [
-    // '/',
-    '/index.html',
-    '/login.html',
-    '/signup.html',
-    '/balances.html',
-    '/dashboard.html',
-    '/ui.html',
-    '/css/styles.css',
-    '/css/theme.css',
-    '/js/main.js',
-    '/js/auth.js',
-    '/js/balances.js',
-    '/js/expenses.js',
-    '/media/icons/evenup.ico',
-    '/media/evenup.png',
-    '/media/hero_image.jpg',
+    `${BASE_PATH}/`,
+    `${BASE_PATH}/index.html`,
+    `${BASE_PATH}/index.html`,
+    `${BASE_PATH}/login.html`,
+    `${BASE_PATH}/signup.html`,
+    `${BASE_PATH}/balances.html`,
+    `${BASE_PATH}/dashboard.html`,
+    `${BASE_PATH}/ui.html`,
+    `${BASE_PATH}/css/styles.css`,
+    `${BASE_PATH}/css/theme.css`,
+    `${BASE_PATH}/js/main.js`,
+    `${BASE_PATH}/js/auth.js`,
+    `${BASE_PATH}/js/balances.js`,
+    `${BASE_PATH}/js/expenses.js`,
+    `${BASE_PATH}/js/pwa.js`,
+    `${BASE_PATH}/media/evenup.ico`,
+    `${BASE_PATH}/media/evenup_image.png`,
+    `${BASE_PATH}/media/hero_image.jpg`,
     // PWA Icons
-    '/media/icons/evenup-192x192.png',
-    '/media/icons/evenup-512x512.png',
+    `${BASE_PATH}/media/icons/evenup-192x192.png`,
+    `${BASE_PATH}/media/icons/evenup-512x512.png`,
     // CDN resources
     'https://cdnjs.cloudflare.com/ajax/libs/bulma/0.9.4/css/bulma.min.css',
     'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css',
     'https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700;800;900&display=swap'
 ];
 
-// Install event - Cache resources
+// Install event
 self.addEventListener('install', event => {
     event.waitUntil(
         caches.open(CACHE_NAME)
@@ -35,12 +39,17 @@ self.addEventListener('install', event => {
             })
             .then(() => {
                 console.log('All resources cached');
-                return self.skipWaiting(); // Force activate new SW
+                return self.skipWaiting();
+            })
+            .catch(error => {
+                console.error('Cache failed:', error);
+                // Continue anyway
+                return self.skipWaiting();
             })
     );
 });
 
-// Activate event - Clean old caches
+// Activate event
 self.addEventListener('activate', event => {
     event.waitUntil(
         caches.keys().then(cacheNames => {
@@ -54,24 +63,32 @@ self.addEventListener('activate', event => {
             );
         }).then(() => {
             console.log('Cache cleanup complete');
-            return self.clients.claim(); // Take control of all pages
+            return self.clients.claim();
         })
     );
 });
 
-// Fetch event - Serve from cache, fallback to network
+// Fetch event with GitHub Pages specific handling
 self.addEventListener('fetch', event => {
+    // Skip cross-origin requests
+    if (!event.request.url.startsWith(self.location.origin)) {
+        return;
+    }
+
     event.respondWith(
         caches.match(event.request)
             .then(response => {
-                // Return cached version or fetch from network
-                return response || fetch(event.request).then(fetchResponse => {
-                    // Don't cache non-successful responses
+                if (response) {
+                    return response;
+                }
+
+                return fetch(event.request).then(fetchResponse => {
+                    // Check if we received a valid response
                     if (!fetchResponse || fetchResponse.status !== 200 || fetchResponse.type !== 'basic') {
                         return fetchResponse;
                     }
 
-                    // Clone the response as it can only be consumed once
+                    // Clone the response
                     const responseToCache = fetchResponse.clone();
 
                     caches.open(CACHE_NAME)
@@ -83,22 +100,11 @@ self.addEventListener('fetch', event => {
                 });
             })
             .catch(() => {
-                // Offline fallback for HTML pages
+                // Offline fallback
                 if (event.request.destination === 'document') {
-                    return caches.match('/index.html');
+                    return caches.match(`${BASE_PATH}/index.html`) ||
+                        caches.match(`${BASE_PATH}/index.html`);
                 }
             })
     );
 });
-
-// Background sync for offline actions (optional)
-self.addEventListener('sync', event => {
-    if (event.tag === 'background-sync') {
-        event.waitUntil(doBackgroundSync());
-    }
-});
-
-function doBackgroundSync() {
-    // Handle offline actions when connection is restored
-    console.log('Background sync triggered');
-}

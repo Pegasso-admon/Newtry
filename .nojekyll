@@ -1,0 +1,24 @@
+# .nojekyll file (create empty file in root)
+# This prevents Jekyll from processing your files
+
+# _config.yml (if you want to use Jekyll)
+title: EvenUp
+description: Split expenses with friends easily
+baseurl: "/Newtry" # Replace with your actual repo name
+url: "https://Pegasso-admon.github.io" # Replace with your GitHub username
+
+# Include PWA files
+include:
+  - manifest.json
+  - sw.js
+  - browserconfig.xml
+
+# Exclude unnecessary files
+exclude:
+  - README.md
+  - package.json
+  - node_modules/
+
+# Plugin for PWA support
+plugins:
+  - jekyll-pwa-plugin

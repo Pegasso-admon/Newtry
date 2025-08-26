@@ -1,24 +1,24 @@
 const CACHE_NAME = 'evenup-v1.0.0';
 const urlsToCache = [
     // '/',
-    '/frontend/index.html',
-    '/frontend/login.html',
-    '/frontend/signup.html',
-    '/frontend/balances.html',
-    '/frontend/dashboard.html',
-    '/frontend/ui.html',
-    '/frontend/css/styles.css',
-    '/frontend/css/theme.css',
-    '/frontend/js/main.js',
-    '/frontend/js/auth.js',
-    '/frontend/js/balances.js',
-    '/frontend/js/expenses.js',
-    '/frontend/media/icons/evenup.ico',
-    '/frontend/media/evenup.png',
-    '/frontend/media/hero_image.jpg',
+    '/index.html',
+    '/login.html',
+    '/signup.html',
+    '/balances.html',
+    '/dashboard.html',
+    '/ui.html',
+    '/css/styles.css',
+    '/css/theme.css',
+    '/js/main.js',
+    '/js/auth.js',
+    '/js/balances.js',
+    '/js/expenses.js',
+    '/media/icons/evenup.ico',
+    '/media/evenup.png',
+    '/media/hero_image.jpg',
     // PWA Icons
-    '/frontend/media/icons/evenup-192x192.png',
-    '/frontend/media/icons/evenup-512x512.png',
+    '/media/icons/evenup-192x192.png',
+    '/media/icons/evenup-512x512.png',
     // CDN resources
     'https://cdnjs.cloudflare.com/ajax/libs/bulma/0.9.4/css/bulma.min.css',
     'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css',
@@ -85,7 +85,7 @@ self.addEventListener('fetch', event => {
             .catch(() => {
                 // Offline fallback for HTML pages
                 if (event.request.destination === 'document') {
-                    return caches.match('/frontend/index.html');
+                    return caches.match('/index.html');
                 }
             })
     );
